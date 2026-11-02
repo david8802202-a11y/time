@@ -400,7 +400,8 @@ async function buildWorkbook(ExcelJS, templateBytes, inp, res){
       for(let c=5;c<=lastCol;c++) row.getCell(c).style=cloneStyle(st.secE);
       row.height=16.5;
     } else if(x.kind==="param"){
-      row.outlineLevel=x.ol||0;
+      // 參數列（走期工作天／每波工作天）隱藏；不放進群組，展開明細時也不會跑出來
+      row.outlineLevel=0; row.hidden=true;
       const a=row.getCell(1); a.style=cloneStyle(st.parA); a.value=x.t;
       const b=row.getCell(2); b.style=cloneStyle(st.parB); b.value=x.b;
       const c=row.getCell(3); c.style=cloneStyle(st.parB); c.value=x.c;
@@ -543,6 +544,7 @@ function render(){
     }
     const cls=r.ol?"sub":"";
     if(r.kind==="param"){
+      return; // Excel 中此列隱藏，預覽同步不顯示
       h+='<tr class="'+cls+' param"><td class="c-a" title="每 10 個工作天一波，最後一波接結案報告">'+r.t+'</td><td class="c-b n">'+r.b+'</td><td class="c-c n">'+r.c+'</td><td class="c-d"></td>'+days.map(d=>'<td class="'+(isOff(d)?"hol":"work")+'"></td>').join("")+"</tr>";
       return;
     }
